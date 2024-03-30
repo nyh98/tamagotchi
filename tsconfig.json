@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "NodeNext",
     "preserveValueImports": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "isolatedModules": true,
+    "moduleResolution": "NodeNext",
     "noImplicitAny": true,
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,

@@ -10,6 +10,8 @@
     "isolatedModules": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "alwaysStrict": true,
+    "strictFunctionTypes": true
   }
 }

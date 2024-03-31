@@ -1,47 +1,18 @@
 import express from 'express';
 import errTemplate from '../error/errTemplate.ts';
 import utils from '../utils/utils.ts';
-import sqlTemplate from '../utils/sqlTemplate.ts';
+import userValidator from '../controllers/user-controller/user-validator.ts';
+import userController from '../controllers/user-controller/user-controller.ts';
+import userError from '../error/user-error.ts';
 
 const userRouter = express.Router();
 
-userRouter.post('/join', (req, res) => {
-  const { uid, pwd, nickName } = req.body;
-
-  const isValidData = utils.isValidStringData(uid, pwd, nickName);
-  if (!isValidData) {
-    return res
-      .status(400)
-      .json(errTemplate.queryErr('데이터가 정확하지 않습니다'));
-  }
-
-  if (uid.length < 4 || pwd.length < 4 || nickName.length < 2) {
-    return res
-      .status(400)
-      .json(
-        errTemplate.queryErr(
-          '아이디, 비밀번호는 4글자 이상 닉네임은 2글자 이상이여야 합니다'
-        )
-      );
-  }
-
-  const hashPwd = utils.hashPassword(pwd);
-  sqlTemplate
-    .modifyQuery(
-      'INSERT INTO users (uid, pwd, nick_name) VALUES (?, ?, ?)',
-      uid,
-      hashPwd,
-      nickName
-    )
-    .then(() => res.json({ message: `${nickName} 님 회원가입 완료` }))
-    .catch(e =>
-      res
-        .status(424)
-        .json(
-          errTemplate.queryErr('회원가입 실패 중복된 아이디가 있을 수 있습니다')
-        )
-    );
-});
+userRouter.post(
+  '/join',
+  userValidator.join,
+  userController.join,
+  userError.join
+);
 
 userRouter.post('/login', (req, res) => {
   const { uid, pwd, nickName } = req.body;

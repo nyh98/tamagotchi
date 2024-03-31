@@ -1,5 +1,5 @@
 import { QueryOptions } from 'mariadb';
-import fetchConn from '../db/connection/mariadb.ts';
+import fetchConn from './mariadb.ts';
 
 const sqlTemplate = {
   getQuery: async (sql: string | QueryOptions, ...values: unknown[]) => {

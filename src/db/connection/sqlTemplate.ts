@@ -10,6 +10,8 @@ const sqlTemplate = {
 
       const rows = await conn.query(sql, values);
 
+      if (!rows[0]) throw new Error('일치하는 정보가 없음');
+
       return rows;
     } catch (e) {
       console.log(e);
@@ -25,7 +27,9 @@ const sqlTemplate = {
     try {
       conn = await fetchConn();
 
-      const rows = await conn.query(sql, values);
+      const result = await conn.query(sql, values);
+
+      if (!result.affectedRows) throw new Error('Not found');
 
       return true;
     } catch (e) {

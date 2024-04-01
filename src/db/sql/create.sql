@@ -12,14 +12,16 @@ CREATE TABLE pets(
 
 CREATE TABLE foods(
      id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-     name VARCHAR(10) UNIQUE NOT NULL
+     name VARCHAR(10) UNIQUE NOT NULL,
+     satisfy_hunger_lv TINYINT UNSIGNED NOT NULL
 );
 
 CREATE TABLE user_pet_catalog(
      id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
      user_id INT UNSIGNED NOT NULL ,
-     pet_id INT UNSIGNED NOT NULL ,
-     FOREIGN KEY (user_id) REFERENCES users (id),
+     pet_id INT UNSIGNED NOT NULL,
+     max_pet_lv_reached TINYINT DEFAULT 1,
+     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
      FOREIGN KEY (pet_id) REFERENCES pets (id)
 );
 
@@ -27,11 +29,11 @@ CREATE TABLE user_current_pet(
      id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
      user_id INT UNSIGNED NOT NULL UNIQUE, 
      pet_id INT UNSIGNED NOT NULL,
-     phase INT NOT NULL,
-     hungry INT NOT NULL, 
-     bored  INT NOT NULL,
-     next_level TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-     FOREIGN KEY (user_id) REFERENCES users (id),
+     phase TINYINT UNSIGNED NOT NULL DEFAULT 1,
+     hungry TINYINT UNSIGNED NOT NULL DEFAULT 0, 
+     bored  TINYINT UNSIGNED NOT NULL DEFAULT 0
+     next_lv_time DATETIME NOT NULL DEFAULT (NOW() + INTERVAL 10 MINUTE),
+     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
      FOREIGN KEY (pet_id) REFERENCES pets (id)
 );
 
@@ -39,7 +41,7 @@ CREATE TABLE user_foods(
      id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
      user_id INT UNSIGNED NOT NULL UNIQUE, 
      food_id INT UNSIGNED NOT NULL,
-     food_count INT,
-     FOREIGN KEY (user_id) REFERENCES users (id),
-     FOREIGN KEY (food_id) REFERENCES foods (id)
+     food_count INT NOT NULL DEFAULT 5,
+     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+     FOREIGN KEY (food_id) REFERENCES foods (id) 
 );

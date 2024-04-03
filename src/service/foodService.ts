@@ -1,6 +1,6 @@
 import { PoolConnection } from 'mariadb';
-import sqlTemplate from '../db/connection/sqlTemplate.ts';
-import txTemplate from '../db/connection/txTemplate.ts';
+import sqlTemplate from '../db/template/sqlTemplate.ts';
+import txTemplate from '../db/template/txTemplate.ts';
 
 const foodService = Object.freeze({
   getFoodTx: async (conn: PoolConnection, food_id: number) => {

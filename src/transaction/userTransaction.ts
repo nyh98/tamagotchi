@@ -1,7 +1,7 @@
-import foodService from '../../service/foodService.ts';
-import petService from '../../service/petService.ts';
-import userService from '../../service/userService.ts';
-import fetchConn from '../connection/mariadb.ts';
+import foodService from '../service/foodService.ts';
+import petService from '../service/petService.ts';
+import userService from '../service/userService.ts';
+import fetchConn from '../db/connection/mariadb.ts';
 
 const userTransaction = Object.freeze({
   join: async (uid: string, hashPwd: string, nickName: string) => {
@@ -11,7 +11,7 @@ const userTransaction = Object.freeze({
       await conn.beginTransaction();
 
       try {
-        await userService.joinTx(conn, uid, hashPwd, nickName);
+        await userService.setUserTx(conn, uid, hashPwd, nickName);
         const [user] = await userService.getUserTx(conn, uid, hashPwd);
         const [pet] = await petService.getRandomPetTx(conn);
         const [food] = await foodService.getFoodTx(conn, 1);

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import utils from '../../utils/utils.ts';
-import userTransaction from '../../db/transaction/userTransaction.ts';
+import userTransaction from '../../transaction/userTransaction.ts';
+import userService from '../../service/userService.ts';
 
 const userController = Object.freeze({
   join: async (req: Request, res: Response, next: NextFunction) => {
@@ -19,13 +20,10 @@ const userController = Object.freeze({
 
     const hashPwd = utils.hashPassword(pwd);
 
-    // userService
-    //   .getUser(uid, hashPwd)
-    //   .then(rows => {
-    //     const user = rows[0];
-    //     res.json(user);
-    //   })
-    //   .catch(e => next(e));
+    userService
+      .login(uid, hashPwd)
+      .then(user => res.json(user))
+      .catch(e => next(e));
   },
 });
 

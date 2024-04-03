@@ -5,10 +5,11 @@ const txTemplate = Object.freeze({
     return conn
       .query(sql, values)
       .then(rows => {
-        if (!rows[0]) throw new Error('Not Found');
+        if (!rows[0]) throw new Error('Not found');
         return rows;
       })
       .catch(e => {
+        console.log(e);
         throw e;
       });
   },
@@ -21,10 +22,11 @@ const txTemplate = Object.freeze({
       .batch(sql, values)
       .then(result => {
         if (!Array.isArray(result) && !result.affectedRows) {
-          throw new Error('Not Found');
+          throw new Error('Not found');
         }
       })
       .catch(e => {
+        console.log(e);
         throw e;
       });
   },

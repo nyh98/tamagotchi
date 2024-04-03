@@ -1,5 +1,5 @@
 import { PoolConnection } from 'mariadb';
-import txTemplate from '../db/connection/txTemplate.ts';
+import txTemplate from '../db/template/txTemplate.ts';
 
 const petService = Object.freeze({
   getRandomPetTx: async (conn: PoolConnection) => {

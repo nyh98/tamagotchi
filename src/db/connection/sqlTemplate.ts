@@ -10,7 +10,7 @@ const sqlTemplate = {
 
       const rows = await conn.query(sql, values);
 
-      if (!rows[0]) throw new Error('일치하는 정보가 없음');
+      if (!rows[0]) throw new Error('Not found');
 
       return rows;
     } catch (e) {

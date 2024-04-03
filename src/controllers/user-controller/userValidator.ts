@@ -35,7 +35,7 @@ const userValidator = Object.freeze({
         );
     }
 
-    next();
+    return next();
   },
 
   login: (req: Request, res: Response, next: NextFunction) => {
@@ -68,7 +68,7 @@ const userValidator = Object.freeze({
         );
     }
 
-    next();
+    return next();
   },
 });
 

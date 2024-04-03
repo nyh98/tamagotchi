@@ -1,7 +1,18 @@
 import { PoolConnection } from 'mariadb';
-import txTemplate from '../db/connection/txTemplate.ts';
+import txTemplate from '../db/template/txTemplate.ts';
+import sqlTemplate from '../db/template/sqlTemplate.ts';
+import sqlStrTemplate from '../db/template/sqlStrTemplate.ts';
 
 const userService = Object.freeze({
+  login: async (uid: string, hashPwd: string) => {
+    const [user] = await sqlTemplate.getQuery(
+      sqlStrTemplate.getUser,
+      uid,
+      hashPwd
+    );
+    return user;
+  },
+
   setUserFoodTx: async (
     conn: PoolConnection,
     user_id: number,
@@ -28,7 +39,7 @@ const userService = Object.freeze({
     );
   },
 
-  joinTx: async (
+  setUserTx: async (
     conn: PoolConnection,
     uid: string,
     hashPwd: string,
@@ -46,7 +57,7 @@ const userService = Object.freeze({
   getUserTx: async (conn: PoolConnection, uid: string, hashPwd: string) => {
     const users = await txTemplate.getQuery(
       conn,
-      'SELECT id, nick_name FROM users WHERE uid = ? AND pwd = ?',
+      sqlStrTemplate.getUser,
       uid,
       hashPwd
     ); //저장된 유저 데이터 get 쿼리(user의 고유id값 추출을 위함)

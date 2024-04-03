@@ -45,3 +45,5 @@ CREATE TABLE user_foods(
      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
      FOREIGN KEY (food_id) REFERENCES foods (id) 
 );
+
+

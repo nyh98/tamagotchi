@@ -9,16 +9,24 @@ const userError = Object.freeze({
       return;
     }
 
+    if (err.message === 'Not found') {
+      return res
+        .status(404)
+        .json(errTemplate.queryErr('존재하지 않는 데이터가 있습니다'));
+    }
+
     res
       .status(400)
       .json(errTemplate.queryErr('회원가입 실패 관리자에게 문의하세요'));
   },
 
   login: (err: any, req: Request, res: Response, next: NextFunction) => {
-    if (err.message === '일치하는 정보가 없음') {
+    if (err.message === 'Not found') {
       return res
         .status(404)
-        .json(errTemplate.queryErr('아이디, 비번호를 다시 한번 확인해 주세요'));
+        .json(
+          errTemplate.queryErr('아이디, 비밀번호를 다시 한번 확인해 주세요')
+        );
     }
     res
       .status(404)

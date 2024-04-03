@@ -1,15 +1,13 @@
-import sqlTemplate from '../db/connection/sqlTemplate.ts';
-import utils from '../utils/utils.ts';
+import { PoolConnection } from 'mariadb';
+import txTemplate from '../db/connection/txTemplate.ts';
 
 const petService = Object.freeze({
-  getPet: async () => {
-    const petNumber = utils.randomPetNumber();
-    return sqlTemplate
-      .getQuery('SELECT * FROM pets WHERE id = ?', petNumber)
-      .then(rows => rows[0])
-      .catch(e => {
-        throw e;
-      });
+  getRandomPetTx: async (conn: PoolConnection) => {
+    const pets = await txTemplate.getQuery(
+      conn,
+      'SELECT * FROM pets ORDER BY RAND() LIMIT 1'
+    );
+    return pets;
   },
 });
 

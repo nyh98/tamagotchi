@@ -1,33 +1,41 @@
-import { QueryOptions } from 'mariadb';
+import { PoolConnection, QueryOptions } from 'mariadb';
 import fetchConn from '../connection/mariadb.ts';
 
-const sqlTemplate = {
-  getQuery: async (sql: string | QueryOptions, ...values: unknown[]) => {
-    let conn;
+class SqlTemplate {
+  /**트랜젝션 진행시 conn 필수 */
+  async getQuery(
+    sql: string | QueryOptions,
+    values: unknown[],
+    conn?: PoolConnection
+  ) {
+    let connection;
 
     try {
-      conn = await fetchConn();
-
-      const rows = await conn.query(sql, values);
+      connection = conn ?? (await fetchConn());
+      const rows = await connection.query(sql, values);
 
       if (!rows[0]) throw new Error('Not found');
 
       return rows;
     } catch (e) {
-      console.log(e);
       throw e;
     } finally {
-      if (conn) conn.end();
+      if (!conn && connection) connection.end();
     }
-  },
+  }
 
-  modifyQuery: async (sql: string | QueryOptions, ...values: unknown[]) => {
-    let conn;
+  /**트랜젝션 진행시 conn 필수 */
+  async modifyQuery(
+    sql: string | QueryOptions,
+    values: unknown[],
+    conn?: PoolConnection
+  ) {
+    let connection;
 
     try {
-      conn = await fetchConn();
+      connection = conn ?? (await fetchConn());
 
-      const result = await conn.query(sql, values);
+      const result = await connection.query(sql, values);
 
       if (!result.affectedRows) throw new Error('Not found');
 
@@ -36,9 +44,9 @@ const sqlTemplate = {
       console.log(e);
       throw e;
     } finally {
-      if (conn) conn.end();
+      if (!conn && connection) connection.end();
     }
-  },
-};
+  }
+}
 
-export default sqlTemplate;
+export default SqlTemplate;

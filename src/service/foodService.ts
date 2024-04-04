@@ -1,16 +1,23 @@
 import { PoolConnection } from 'mariadb';
-import sqlTemplate from '../db/template/sqlTemplate.ts';
-import txTemplate from '../db/template/txTemplate.ts';
+import SqlTemplate from '../db/template/SqlTemplate.ts';
+import TxnService from './TxnService.ts';
 
-const foodService = Object.freeze({
-  getFoodTx: async (conn: PoolConnection, food_id: number) => {
-    const foods = await txTemplate.getQuery(
-      conn,
+class FoodService {
+  SqlTemplate;
+  TxnService;
+
+  constructor() {
+    this.SqlTemplate = new SqlTemplate();
+    this.TxnService = new TxnService();
+  }
+
+  async getFood(foo_id: number, conn?: PoolConnection) {
+    const [food] = await this.SqlTemplate.getQuery(
       'SELECT * FROM foods WHERE id = ?',
-      food_id
+      [foo_id, conn]
     );
-    return foods;
-  },
-});
+    return food;
+  }
+}
 
-export default foodService;
+export default FoodService;

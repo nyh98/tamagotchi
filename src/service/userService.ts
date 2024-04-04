@@ -1,68 +1,66 @@
 import { PoolConnection } from 'mariadb';
-import txTemplate from '../db/template/txTemplate.ts';
-import sqlTemplate from '../db/template/sqlTemplate.ts';
-import sqlStrTemplate from '../db/template/sqlStrTemplate.ts';
+import TxnService from './TxnService.ts';
+import SqlTemplate from '../db/template/SqlTemplate.ts';
+import PetService from './petService.ts';
+import FoodService from './foodService.ts';
 
-const userService = Object.freeze({
-  login: async (uid: string, hashPwd: string) => {
-    const [user] = await sqlTemplate.getQuery(
-      sqlStrTemplate.getUser,
-      uid,
-      hashPwd
-    );
-    return user;
-  },
+class UserService {
+  TxnService;
+  SqlTemplate;
 
-  setUserFoodTx: async (
-    conn: PoolConnection,
-    user_id: number,
-    food_id: number
-  ) => {
-    await txTemplate.modifyQuery(
-      conn,
+  constructor() {
+    this.TxnService = new TxnService();
+    this.SqlTemplate = new SqlTemplate();
+  }
+
+  async setFoodForUser(userId: number, foodId: number, conn?: PoolConnection) {
+    await this.SqlTemplate.modifyQuery(
       'INSERT INTO user_foods (user_id, food_id) VALUES (? , ?)',
-      user_id,
-      food_id
+      [userId, foodId],
+      conn
     );
-  },
+  }
 
-  setUserPetTx: async (
-    conn: PoolConnection,
-    user_id: number,
-    pet_id: number
-  ) => {
-    await txTemplate.modifyQuery(
-      conn,
+  async setPetForUser(userId: number, petId: number, conn?: PoolConnection) {
+    await this.SqlTemplate.modifyQuery(
       'INSERT INTO user_current_pet (user_id, pet_id) VALUES (?, ?)',
-      user_id,
-      pet_id
+      [userId, petId],
+      conn
     );
-  },
+  }
 
-  setUserTx: async (
-    conn: PoolConnection,
+  async setUser(
     uid: string,
     hashPwd: string,
-    nickName: string
-  ) => {
-    await txTemplate.modifyQuery(
-      conn,
+    nickName: string,
+    conn?: PoolConnection
+  ) {
+    await this.SqlTemplate.modifyQuery(
       'INSERT INTO users (uid, pwd, nick_name) VALUES (?, ?, ?)',
-      uid,
-      hashPwd,
-      nickName
+      [uid, hashPwd, nickName],
+      conn
     );
-  },
+  }
 
-  getUserTx: async (conn: PoolConnection, uid: string, hashPwd: string) => {
-    const users = await txTemplate.getQuery(
-      conn,
-      sqlStrTemplate.getUser,
-      uid,
-      hashPwd
-    ); //저장된 유저 데이터 get 쿼리(user의 고유id값 추출을 위함)
-    return users;
-  },
-});
+  async getUser(uid: string, hashPwd: string, conn?: PoolConnection) {
+    const [user] = await this.SqlTemplate.getQuery(
+      'SELECT id, nick_name AS nickName FROM users WHERE uid = ? AND pwd = ?',
+      [uid, hashPwd],
+      conn
+    );
+    return user;
+  }
 
-export default userService;
+  async joinUser(uid: string, hashPwd: string, nickName: string) {
+    await this.TxnService.transaction(async conn => {
+      await this.setUser(uid, hashPwd, nickName, conn);
+      const user = await this.getUser(uid, hashPwd, conn);
+      const pet = await new PetService().getRandomPet(conn);
+      const food = await new FoodService().getFood(1, conn);
+      await this.setPetForUser(user.id, pet.id, conn);
+      await this.setFoodForUser(user.id, food.id, conn);
+    });
+  }
+}
+
+export default UserService;

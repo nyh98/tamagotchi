@@ -32,7 +32,7 @@ CREATE TABLE user_current_pet(
      phase TINYINT UNSIGNED NOT NULL DEFAULT 1,
      hungry TINYINT UNSIGNED NOT NULL DEFAULT 0, 
      bored  TINYINT UNSIGNED NOT NULL DEFAULT 0,
-     next_lv_time TIMESTAMP NOT NULL DEFAULT (NOW() + INTERVAL 10 MINUTE),
+     next_lv_time TIMESTAMP DEFAULT (NOW() + INTERVAL 10 MINUTE),
      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
      FOREIGN KEY (pet_id) REFERENCES pets (id)
 );
@@ -45,5 +45,13 @@ CREATE TABLE user_foods(
      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
      FOREIGN KEY (food_id) REFERENCES foods (id) 
 );
+
+SELECT @@GLOBAL.time_zone;
+
+UPDATE user_current_pet SET next_lv_time = NOW(), phase = 1 WHERE user_id = 3
+
+UPDATE user_current_pet
+SET next_lv_time = CURRENT_TIMESTAMP + INTERVAL 4 HOUR
+WHERE user_id = 4;
 
 

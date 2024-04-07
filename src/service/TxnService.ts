@@ -10,7 +10,7 @@ class TxnService {
       await connection.beginTransaction();
 
       try {
-        context(connection);
+        await context(connection);
 
         await connection.commit();
       } catch (e) {
@@ -18,7 +18,6 @@ class TxnService {
         throw e;
       }
     } catch (e) {
-      console.log(e);
       throw e;
     } finally {
       if (connection) connection.end();

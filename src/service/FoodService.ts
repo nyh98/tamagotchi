@@ -3,19 +3,17 @@ import SqlTemplate from '../db/template/SqlTemplate.ts';
 import TxnService from './TxnService.ts';
 
 class FoodService {
-  SqlTemplate;
-  TxnService;
+  private SqlTemplate;
+  private TxnService;
 
   constructor() {
     this.SqlTemplate = new SqlTemplate();
     this.TxnService = new TxnService();
   }
 
-  async getFood(foo_id: number, conn?: PoolConnection) {
-    const [food] = await this.SqlTemplate.getQuery(
-      'SELECT * FROM foods WHERE id = ?',
-      [foo_id, conn]
-    );
+  async getFood(food_id: number, conn?: PoolConnection) {
+    const [food] = await this.SqlTemplate.getQuery('SELECT * FROM foods WHERE id = ?', [food_id], conn);
+
     return food;
   }
 }

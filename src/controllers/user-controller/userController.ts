@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import utils from '../../utils/utils.ts';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import UserService from '../../service/userService.ts';
+import UserService from '../../service/UserService.ts';
 dotenv.config();
 
 const userController = Object.freeze({
@@ -13,9 +13,7 @@ const userController = Object.freeze({
 
     return await new UserService()
       .joinUser(uid, hashPwd, nickName)
-      .then(() =>
-        res.status(201).json({ message: `${nickName} 님 회원가입 완료` })
-      )
+      .then(() => res.status(201).json({ message: `${nickName} 님 회원가입 완료` }))
       .catch(e => next(e));
   },
 

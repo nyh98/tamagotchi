@@ -5,18 +5,8 @@ import userError from '../error/userError.ts';
 
 const userRouter = express.Router();
 
-userRouter.post(
-  '/join',
-  userValidator.join,
-  userController.join,
-  userError.join
-);
+userRouter.post('/join', userValidator.join, userController.join, userError.join);
 
-userRouter.post(
-  '/login',
-  userValidator.login,
-  userController.login,
-  userError.login
-);
+userRouter.post('/login', userValidator.login, userController.login, userError.login);
 
 export default userRouter;

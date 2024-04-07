@@ -5,8 +5,8 @@ import PetService from './PetService.ts';
 import FoodService from './FoodService.ts';
 
 class UserService {
-  TxnService;
-  SqlTemplate;
+  private TxnService;
+  private SqlTemplate;
 
   constructor() {
     this.TxnService = new TxnService();
@@ -29,12 +29,7 @@ class UserService {
     );
   }
 
-  async setUser(
-    uid: string,
-    hashPwd: string,
-    nickName: string,
-    conn?: PoolConnection
-  ) {
+  async setUser(uid: string, hashPwd: string, nickName: string, conn?: PoolConnection) {
     await this.SqlTemplate.modifyQuery(
       'INSERT INTO users (uid, pwd, nick_name) VALUES (?, ?, ?)',
       [uid, hashPwd, nickName],

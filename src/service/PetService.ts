@@ -11,6 +11,31 @@ class PetService {
     this.TxnService = new TxnService();
   }
 
+  private async setHungryLevel(hungryLevel: number, userId: number) {
+    return await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET hungry = ? WHERE user_id = ?', [
+      hungryLevel,
+      userId,
+    ]);
+  }
+
+  private async markPetAsDead(userId: number) {
+    return await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET alive = 0 WHERE user_id = ?', [userId]);
+  }
+
+  async decreaseHungerLevel(hungryLevel: number, userId: number) {
+    const [pet] = await this.getPetFromUser(userId);
+    const afterHungryLv = pet.hungry - hungryLevel;
+    if (afterHungryLv < 0) return await this.setHungryLevel(0, userId);
+    return await this.setHungryLevel(afterHungryLv, userId);
+  }
+
+  async increaseHungerLevel(hungryLevel: number, userId: number) {
+    const [pet] = await this.getPetFromUser(userId);
+    const afterHungryLv = pet.hungry + hungryLevel;
+    if (afterHungryLv >= 100) return await this.markPetAsDead(userId);
+    return await this.setHungryLevel(afterHungryLv, userId);
+  }
+
   async getRandomPet(conn?: PoolConnection) {
     const [pet] = await this.SqlTemplate.getQuery('SELECT * FROM pets ORDER BY RAND() LIMIT 1', [], conn);
     return pet;
@@ -47,7 +72,7 @@ class PetService {
         sql = 'UPDATE user_current_pet SET next_lv_time = NULL WHERE user_id = ?';
     }
 
-    await this.SqlTemplate.modifyQuery(sql, [userId]);
+    return await this.SqlTemplate.modifyQuery(sql, [userId]);
   }
 }
 

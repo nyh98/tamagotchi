@@ -11,8 +11,8 @@ class FoodService {
     this.TxnService = new TxnService();
   }
 
-  async getFood(food_id: number, conn?: PoolConnection) {
-    const [food] = await this.SqlTemplate.getQuery('SELECT * FROM foods WHERE id = ?', [food_id], conn);
+  async getFood(foodId: number, conn?: PoolConnection) {
+    const [food] = await this.SqlTemplate.getQuery('SELECT * FROM foods WHERE id = ?', [foodId], conn);
 
     return food;
   }

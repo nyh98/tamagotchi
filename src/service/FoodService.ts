@@ -1,6 +1,6 @@
 import { PoolConnection } from 'mariadb';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
-import TxnTemplate from '../db/template/TxnService-.ts';
+import TxnTemplate from '../db/template/TxnTemplate.ts';
 
 class FoodService {
   private SqlTemplate;

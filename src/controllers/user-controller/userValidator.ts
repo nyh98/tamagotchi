@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import utils from '../../utils/utils.ts';
 import errTemplate from '../../error/errTemplate.ts';
 
-const userValidator = Object.freeze({
-  join: (req: Request, res: Response, next: NextFunction) => {
+class UserValidator {
+  static join(req: Request, res: Response, next: NextFunction) {
     const { uid, pwd, nickName } = req.body;
 
     //문자열인지 확인
-    if (!utils.isValidStringData(uid, pwd, nickName)) {
+    if (utils.isNotString(uid, pwd, nickName)) {
       return res.status(400).json(errTemplate.queryErr('데이터가 정확하지 않습니다'));
     }
 
@@ -26,13 +26,13 @@ const userValidator = Object.freeze({
     }
 
     return next();
-  },
+  }
 
-  login: (req: Request, res: Response, next: NextFunction) => {
+  static login(req: Request, res: Response, next: NextFunction) {
     const { uid, pwd } = req.body;
 
     //문자열인지 확인
-    if (!utils.isValidStringData(uid, pwd)) {
+    if (utils.isNotString(uid, pwd)) {
       return res.status(400).json(errTemplate.queryErr('데이터가 정확하지 않습니다'));
     }
 
@@ -47,7 +47,7 @@ const userValidator = Object.freeze({
     }
 
     return next();
-  },
-});
+  }
+}
 
-export default userValidator;
+export default UserValidator;

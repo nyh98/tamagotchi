@@ -1,14 +1,14 @@
 import { PoolConnection } from 'mariadb';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
-import TxnService from './TxnService.ts';
+import TxnTemplate from '../db/template/TxnService.ts';
 
 class FoodService {
   private SqlTemplate;
-  private TxnService;
+  private TxnTemplate;
 
   constructor() {
     this.SqlTemplate = new SqlTemplate();
-    this.TxnService = new TxnService();
+    this.TxnTemplate = new TxnTemplate();
   }
 
   async getFood(foodId: number, conn?: PoolConnection) {
@@ -18,4 +18,6 @@ class FoodService {
   }
 }
 
-export default FoodService;
+const foodService = new FoodService();
+
+export default foodService;

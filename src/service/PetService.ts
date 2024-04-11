@@ -1,14 +1,14 @@
 import { PoolConnection } from 'mariadb';
-import TxnService from './TxnService.ts';
+import TxnTemplate from '../db/template/TxnService.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
 
 class PetService {
   private SqlTemplate;
-  private TxnService;
+  private TxnTemplate;
 
   constructor() {
     this.SqlTemplate = new SqlTemplate();
-    this.TxnService = new TxnService();
+    this.TxnTemplate = new TxnTemplate();
   }
 
   private async setHungryLevel(hungryLevel: number, userId: number) {
@@ -76,4 +76,5 @@ class PetService {
   }
 }
 
-export default PetService;
+const petService = new PetService();
+export default petService;

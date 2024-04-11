@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import errTemplate from '../../error/errTemplate.ts';
 
-const petValidator = Object.freeze({
-  auth: (req: Request, res: Response, next: NextFunction) => {
+class PetValidator {
+  static auth(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.tk;
     if (!token) {
       return res.status(401).json(errTemplate.queryErr('로그인을 해주세요'));
@@ -15,17 +15,17 @@ const petValidator = Object.freeze({
         return res.status(404).json(errTemplate.queryErr('토큰이 비어있음'));
       }
       res.locals.tk = data;
-      return next('route');
+      next('route');
     });
-  },
-  hungryDown: (req: Request, res: Response, next: NextFunction) => {
+  }
+  static hungryDown(req: Request, res: Response, next: NextFunction) {
     const { foodId } = req.body;
     if (!foodId) return res.status(400).json(errTemplate.queryErr('필요한 데이터가 없습니다'));
 
     if (typeof foodId !== 'number') return res.status(400).json(errTemplate.queryErr('데이터가 정확하지 않습니다'));
 
     next();
-  },
-});
+  }
+}
 
-export default petValidator;
+export default PetValidator;

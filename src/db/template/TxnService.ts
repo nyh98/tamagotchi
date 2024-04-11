@@ -1,7 +1,7 @@
 import { PoolConnection } from 'mariadb';
-import fetchConn from '../db/connection/mariadb.ts';
+import fetchConn from '../connection/mariadb.ts';
 
-class TxnService {
+class TxnTemplate {
   async transaction<T>(context: (conn: PoolConnection) => Promise<T>) {
     let connection;
 
@@ -25,4 +25,4 @@ class TxnService {
   }
 }
 
-export default TxnService;
+export default TxnTemplate;

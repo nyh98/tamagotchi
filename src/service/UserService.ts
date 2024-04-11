@@ -1,15 +1,15 @@
 import { PoolConnection } from 'mariadb';
-import TxnService from './TxnService.ts';
+import TxnTemplate from '../db/template/TxnService.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
-import PetService from './PetService.ts';
-import FoodService from './FoodService.ts';
+import petService from './PetService.ts';
+import foodService from './FoodService.ts';
 
 class UserService {
-  private TxnService;
+  private TxnTemplate;
   private SqlTemplate;
 
   constructor() {
-    this.TxnService = new TxnService();
+    this.TxnTemplate = new TxnTemplate();
     this.SqlTemplate = new SqlTemplate();
   }
 
@@ -47,15 +47,17 @@ class UserService {
   }
 
   async joinUser(uid: string, hashPwd: string, nickName: string) {
-    await this.TxnService.transaction(async conn => {
+    await this.TxnTemplate.transaction(async conn => {
       await this.setUser(uid, hashPwd, nickName, conn);
       const user = await this.getUser(uid, hashPwd, conn);
-      const pet = await new PetService().getRandomPet(conn);
-      const food = await new FoodService().getFood(1, conn);
+      const pet = await petService.getRandomPet(conn);
+      const food = await foodService.getFood(1, conn);
       await this.setPetForUser(user.id, pet.id, conn);
       await this.setFoodForUser(user.id, food.id, conn);
     });
   }
 }
 
-export default UserService;
+const userService = new UserService();
+
+export default userService;

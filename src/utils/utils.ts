@@ -5,9 +5,8 @@ const utils = {
     return crypto.createHash('sha512').update(pwd).digest('base64');
   },
 
-  /**모든 값이 문자열이면 true를 반환 */
-  isValidStringData(...values: unknown[]) {
-    return values.every(value => typeof value === 'string');
+  isNotString(...values: unknown[]) {
+    return values.every(value => typeof value !== 'string');
   },
 };
 

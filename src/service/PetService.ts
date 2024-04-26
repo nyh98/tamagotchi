@@ -1,6 +1,7 @@
 import { PoolConnection } from 'mariadb';
 import TxnTemplate from '../db/template/TxnTemplate.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
+import requestService from './RequestService.ts';
 
 class PetService {
   private SqlTemplate;
@@ -18,7 +19,7 @@ class PetService {
     ]);
   }
 
-  private async markPetAsDead(userId: number) {
+  async markPetAsDead(userId: number) {
     return await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET alive = 0 WHERE user_id = ?', [userId]);
   }
 
@@ -30,7 +31,7 @@ class PetService {
   }
 
   async increaseHungerLevel(hungryLevel: number, userId: number) {
-    const [pet] = await this.getPetFromUser(userId);
+    const pet = await this.getPetFromUser(userId);
     const afterHungryLv = pet.hungry + hungryLevel;
     if (afterHungryLv >= 100) return await this.markPetAsDead(userId);
     return await this.setHungryLevel(afterHungryLv, userId);
@@ -42,7 +43,8 @@ class PetService {
   }
 
   async getPetFromUser(userId: number) {
-    return await this.SqlTemplate.getQuery('SELECT * FROM user_current_pet WHERE user_id = ?', [userId]);
+    const [pet] = await this.SqlTemplate.getQuery('SELECT * FROM user_current_pet WHERE user_id = ?', [userId]);
+    return pet;
   }
 
   async levelUpcheck(userId: number) {
@@ -73,6 +75,27 @@ class PetService {
     }
 
     return await this.SqlTemplate.modifyQuery(sql, [userId]);
+  }
+
+  async calculateStoolCount(userId: number) {
+    const hour = await requestService.calculateHoursBetweenRequests(userId);
+
+    if (hour >= 48) return 5;
+
+    if (hour >= 24) return 4;
+
+    if (hour >= 12) return 3;
+
+    if (hour >= 6) return 2;
+
+    if (hour >= 3) return 1;
+  }
+
+  async updateStoolCount(userId: number, stoolCount: number) {
+    await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET stool_count = stool_count + ? WHERE user_id = ?', [
+      stoolCount,
+      userId,
+    ]);
   }
 }
 

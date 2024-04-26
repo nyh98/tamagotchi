@@ -1,6 +1,6 @@
 import express from 'express';
-import UserValidator from '../controllers/user-controller/userValidator.ts';
-import UserController from '../controllers/user-controller/userController.ts';
+import UserValidator from '../validators/userValidator.ts';
+import UserController from '../controllers/userController.ts';
 import UserError from '../error/userError.ts';
 
 const userRouter = express.Router();

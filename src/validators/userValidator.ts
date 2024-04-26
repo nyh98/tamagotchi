@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import utils from '../../utils/utils.ts';
-import errTemplate from '../../error/errTemplate.ts';
+import utils from '../utils/utils.ts';
+import errTemplate from '../error/errTemplate.ts';
 
 class UserValidator {
   static join(req: Request, res: Response, next: NextFunction) {

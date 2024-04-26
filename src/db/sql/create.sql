@@ -34,6 +34,7 @@ CREATE TABLE user_current_pet(
      bored  TINYINT UNSIGNED NOT NULL DEFAULT 0,
      alive TINYINT NOT NULL DEFAULT 1,
      next_lv_time TIMESTAMP DEFAULT (NOW() + INTERVAL 10 MINUTE),
+     stool_count TINYINT UNSIGNED NOT NULL DEFAULT 0
      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
      FOREIGN KEY (pet_id) REFERENCES pets (id)
 );
@@ -47,8 +48,19 @@ CREATE TABLE user_foods(
      FOREIGN KEY (food_id) REFERENCES foods (id) 
 );
 
+CREATE TABLE last_requests(
+     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+     user_id INT UNSIGNED NOT NULL UNIQUE,
+     time TIMESTAMP DEFAULT now(),
+     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 SELECT @@GLOBAL.time_zone;
 
 UPDATE user_current_pet SET next_lv_time = NOW(), phase = 1 WHERE user_id = 4
 
 ALTER TABLE user_current_pet ADD alive TINYINT NOT NULL DEFAULT 1;
+
+SELECT count(*) FROM last_requests;
+
+UPDATE last_requests SET user_id = user_id + 1;

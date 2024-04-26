@@ -3,6 +3,7 @@ import TxnTemplate from '../db/template/TxnTemplate.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
 import petService from './PetService.ts';
 import foodService from './FoodService.ts';
+import requestService from './RequestService.ts';
 
 class UserService {
   private TxnTemplate;
@@ -54,6 +55,7 @@ class UserService {
       const food = await foodService.getFood(1, conn);
       await this.setPetForUser(user.id, pet.id, conn);
       await this.setFoodForUser(user.id, food.id, conn);
+      await requestService.createRequestTime(user.id, conn);
     });
   }
 }

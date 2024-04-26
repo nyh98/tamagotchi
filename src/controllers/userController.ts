@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import utils from '../../utils/utils.ts';
+import utils from '../utils/utils.ts';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import userService from '../../service/UserService.ts';
+import userService from '../service/UserService.ts';
 dotenv.config();
 
 class UserController {

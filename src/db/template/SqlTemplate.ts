@@ -14,6 +14,7 @@ class SqlTemplate {
 
       return rows;
     } catch (e) {
+      console.error(e);
       throw e;
     } finally {
       if (!conn && connection) connection.end();
@@ -33,6 +34,7 @@ class SqlTemplate {
 
       return false;
     } catch (e) {
+      console.error(e);
       throw e;
     } finally {
       if (!conn && connection) connection.end();

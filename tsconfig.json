@@ -2,10 +2,11 @@
   "compilerOptions": {
     "module": "NodeNext",
     "preserveValueImports": false,
+    "target": "ESNext", //최신 ES버전으로 트랜스파일
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "noEmit": true,
+    "noEmit": true, //js 파일 생성하지 않게 설정(타입 체크용)
     "isolatedModules": true,
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true

@@ -2,6 +2,7 @@ import { PoolConnection } from 'mariadb';
 import TxnTemplate from '../db/template/TxnTemplate.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
 import requestService from './RequestService.ts';
+import { NotFoundError } from '../errors/MyErrors.ts';
 
 class PetService {
   private SqlTemplate;
@@ -24,7 +25,7 @@ class PetService {
   }
 
   async decreaseHungerLevel(hungryLevel: number, userId: number) {
-    const [pet] = await this.getPetFromUser(userId);
+    const pet = await this.getPetFromUser(userId);
     const afterHungryLv = pet.hungry - hungryLevel;
     if (afterHungryLv < 0) return await this.setHungryLevel(0, userId);
     return await this.setHungryLevel(afterHungryLv, userId);
@@ -44,6 +45,7 @@ class PetService {
 
   async getPetFromUser(userId: number) {
     const [pet] = await this.SqlTemplate.getQuery('SELECT * FROM user_current_pet WHERE user_id = ?', [userId]);
+    if (!pet) throw new NotFoundError('인증에 문제가 있습니다 다시 로그인 해주세요', 401);
     return pet;
   }
 
@@ -57,7 +59,7 @@ class PetService {
   async setNextLvTime(userId: number) {
     let sql;
 
-    const [userPet] = await this.getPetFromUser(userId);
+    const userPet = await this.getPetFromUser(userId);
 
     switch (userPet.phase) {
       case 2:
@@ -80,15 +82,15 @@ class PetService {
   async calculateStoolCount(userId: number) {
     const hour = await requestService.calculateHoursBetweenRequests(userId);
 
-    if (hour >= 48) return 5;
+    if (hour >= 48) return 5; //마지막 요청과 현재 요청의 시간차이가 48시간 이상이면 응가 5
 
-    if (hour >= 24) return 4;
+    if (hour >= 24) return 4; //24시간 이상이면 4
 
-    if (hour >= 12) return 3;
+    if (hour >= 12) return 3; //12시간 이상이면 3
 
-    if (hour >= 6) return 2;
+    if (hour >= 6) return 2; // 동일
 
-    if (hour >= 3) return 1;
+    if (hour >= 3) return 1; // 동일
   }
 
   async updateStoolCount(userId: number, stoolCount: number) {

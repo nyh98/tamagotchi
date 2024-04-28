@@ -1,5 +1,6 @@
 import { PoolConnection } from 'mariadb';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
+import { NotFoundError } from '../errors/MyErrors.ts';
 
 class RequestService {
   private sqlTemplate;
@@ -29,6 +30,7 @@ class RequestService {
 
   private async getLastRequestTime(userId: number) {
     const [data] = await this.sqlTemplate.getQuery('SELECT time FROM last_requests WHERE user_id = ?', [userId]);
+    if (!data) throw new NotFoundError('인증에 문제가 있습니다 다시 로그인 해주세요', 401);
     const lastRequestTime = new Date(data.time);
     return lastRequestTime;
   }

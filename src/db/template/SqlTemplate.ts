@@ -1,4 +1,4 @@
-import { PoolConnection, QueryOptions } from 'mariadb';
+import { PoolConnection, QueryOptions, SqlError } from 'mariadb';
 import fetchConn from '../connection/mariadb.ts';
 
 class SqlTemplate {
@@ -9,8 +9,6 @@ class SqlTemplate {
     try {
       connection = conn ?? (await fetchConn());
       const rows = await connection.query(sql, values);
-
-      if (!rows[0]) throw new Error('Not found');
 
       return rows;
     } catch (e) {

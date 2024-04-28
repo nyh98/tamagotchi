@@ -4,6 +4,7 @@ import SqlTemplate from '../db/template/SqlTemplate.ts';
 import petService from './PetService.ts';
 import foodService from './FoodService.ts';
 import requestService from './RequestService.ts';
+import { NotFoundError } from '../errors/MyErrors.ts';
 
 class UserService {
   private TxnTemplate;
@@ -44,6 +45,7 @@ class UserService {
       [uid, hashPwd],
       conn
     );
+    if (!user) throw new NotFoundError('아이디 또는 비밀번호가 일치하지 않습니다', 404);
     return user;
   }
 

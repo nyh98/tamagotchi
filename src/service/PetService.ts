@@ -1,34 +1,40 @@
 import { PoolConnection } from 'mariadb';
-import TxnTemplate from '../db/template/TxnTemplate.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
 import requestService from './RequestService.ts';
 import { NotFoundError } from '../errors/MyErrors.ts';
+import foodService from './FoodService.ts';
 
 class PetService {
   private SqlTemplate;
-  private TxnTemplate;
 
   constructor() {
     this.SqlTemplate = new SqlTemplate();
-    this.TxnTemplate = new TxnTemplate();
   }
 
-  private async setHungryLevel(hungryLevel: number, userId: number) {
-    return await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET hungry = ? WHERE user_id = ?', [
-      hungryLevel,
-      userId,
-    ]);
+  private async setHungryLevel(hungryLevel: number, userId: number, conn?: PoolConnection) {
+    return await this.SqlTemplate.modifyQuery(
+      'UPDATE user_current_pet SET hungry = ? WHERE user_id = ?',
+      [hungryLevel, userId],
+      conn
+    );
   }
 
   async markPetAsDead(userId: number) {
     return await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET alive = 0 WHERE user_id = ?', [userId]);
   }
 
-  async decreaseHungerLevel(hungryLevel: number, userId: number) {
-    const pet = await this.getPetFromUser(userId);
+  private async decreaseHungerLevel(hungryLevel: number, userId: number, conn?: PoolConnection) {
+    const pet = await this.getPetFromUser(userId, conn);
     const afterHungryLv = pet.hungry - hungryLevel;
-    if (afterHungryLv < 0) return await this.setHungryLevel(0, userId);
-    return await this.setHungryLevel(afterHungryLv, userId);
+    if (afterHungryLv < 0) return await this.setHungryLevel(0, userId, conn);
+    return await this.setHungryLevel(afterHungryLv, userId, conn);
+  }
+
+  async decreaseHungerWithFood(userId: number, foodId: number) {
+    await this.SqlTemplate.transaction(async conn => {
+      const food = await foodService.getFood(foodId, conn);
+      await petService.decreaseHungerLevel(food.satisfy_hunger_lv, userId, conn);
+    });
   }
 
   async increaseHungerLevel(hungryLevel: number, userId: number) {
@@ -43,8 +49,8 @@ class PetService {
     return pet;
   }
 
-  async getPetFromUser(userId: number) {
-    const [pet] = await this.SqlTemplate.getQuery('SELECT * FROM user_current_pet WHERE user_id = ?', [userId]);
+  async getPetFromUser(userId: number, conn?: PoolConnection) {
+    const [pet] = await this.SqlTemplate.getQuery('SELECT * FROM user_current_pet WHERE user_id = ?', [userId], conn);
     if (!pet) throw new NotFoundError('인증에 문제가 있습니다 다시 로그인 해주세요', 401);
     return pet;
   }
@@ -79,7 +85,7 @@ class PetService {
     return await this.SqlTemplate.modifyQuery(sql, [userId]);
   }
 
-  async calculateStoolCount(userId: number) {
+  private async calculateStoolCount(userId: number) {
     const hour = await requestService.calculateHoursBetweenRequests(userId);
 
     if (hour >= 48) return 5; //마지막 요청과 현재 요청의 시간차이가 48시간 이상이면 응가 5
@@ -93,11 +99,22 @@ class PetService {
     if (hour >= 3) return 1; // 동일
   }
 
-  async updateStoolCount(userId: number, stoolCount: number) {
-    await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET stool_count = stool_count + ? WHERE user_id = ?', [
-      stoolCount,
-      userId,
-    ]);
+  private async updateStoolCount(userId: number, stoolCount: number, conn?: PoolConnection) {
+    await this.SqlTemplate.modifyQuery(
+      'UPDATE user_current_pet SET stool_count = stool_count + ? WHERE user_id = ?',
+      [stoolCount, userId],
+      conn
+    );
+  }
+
+  async updateRequestTimeAndStoolCount(userId: number) {
+    await this.SqlTemplate.transaction(async conn => {
+      const stoolCount = await petService.calculateStoolCount(userId);
+      if (stoolCount) {
+        await petService.updateStoolCount(userId, stoolCount, conn);
+      }
+      await requestService.createOrUpdateTime(userId, conn);
+    });
   }
 }
 

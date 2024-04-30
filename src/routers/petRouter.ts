@@ -22,4 +22,8 @@ petRouter.put('/hungry-up', PetController.hungryUp, PetErrorHandler.hungry);
 
 petRouter.use(UncaughtErrorHandler.responseError);
 
+petRouter.use((req, res) => {
+  res.send('아무것도 없음');
+}); //404페이지 만들어야됨
+
 export default petRouter;

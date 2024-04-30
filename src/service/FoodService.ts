@@ -1,15 +1,12 @@
 import { PoolConnection } from 'mariadb';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
-import TxnTemplate from '../db/template/TxnTemplate.ts';
 import { NotFoundError } from '../errors/MyErrors.ts';
 
 class FoodService {
   private SqlTemplate;
-  private TxnTemplate;
 
   constructor() {
     this.SqlTemplate = new SqlTemplate();
-    this.TxnTemplate = new TxnTemplate();
   }
 
   async getFood(foodId: number, conn?: PoolConnection) {

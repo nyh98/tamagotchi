@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import petService from '../service/PetService.ts';
 import dotenv from 'dotenv';
-import foodService from '../service/FoodService.ts';
-import requestService from '../service/RequestService.ts';
 dotenv.config();
 
 class PetController {
@@ -41,29 +39,23 @@ class PetController {
     const userId = res.locals.userId;
     const { foodId } = req.body;
 
-    try {
-      const food = await foodService.getFood(foodId);
-      await petService.decreaseHungerLevel(food.satisfy_hunger_lv, userId);
-      res.sendStatus(200);
-    } catch (e) {
-      next(e);
-    }
+    await petService
+      .decreaseHungerWithFood(userId, foodId)
+      .then(() => res.sendStatus(200))
+      .catch(e => next(e));
   }
 
+  /**
+   * 엔드 포인트 아님
+   * 펫 관련 요청시 펫의 상태와 마지막 요청시간을 업데이트 하는 미들웨어 로직
+   */
   static async updateRequestTimeAndStoolCount(req: Request, res: Response, next: NextFunction) {
     const userId = res.locals.userId;
 
-    try {
-      const stoolCount = await petService.calculateStoolCount(userId);
-      if (stoolCount) {
-        await petService.updateStoolCount(userId, stoolCount);
-      }
-
-      await requestService.createOrUpdateTime(userId);
-      next();
-    } catch (e) {
-      next(e);
-    }
+    await petService
+      .updateRequestTimeAndStoolCount(userId)
+      .then(() => next())
+      .catch(e => next(e));
   }
 }
 

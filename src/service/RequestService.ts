@@ -9,10 +9,12 @@ class RequestService {
     this.sqlTemplate = new SqlTemplate();
   }
 
-  private async updateRequestTime(userId: number) {
-    const changed = await this.sqlTemplate.modifyQuery('UPDATE last_requests SET time = now() WHERE user_id = ?', [
-      userId,
-    ]);
+  private async updateRequestTime(userId: number, conn?: PoolConnection) {
+    const changed = await this.sqlTemplate.modifyQuery(
+      'UPDATE last_requests SET time = now() WHERE user_id = ?',
+      [userId],
+      conn
+    );
     return changed;
   }
 
@@ -20,11 +22,11 @@ class RequestService {
     await this.sqlTemplate.modifyQuery('INSERT INTO last_requests (user_id) VALUES (?)', [userId], conn);
   }
 
-  async createOrUpdateTime(userId: number) {
-    const isChange = await this.updateRequestTime(userId);
+  async createOrUpdateTime(userId: number, conn?: PoolConnection) {
+    const isChange = await this.updateRequestTime(userId, conn);
 
     if (!isChange) {
-      await this.createRequestTime(userId);
+      await this.createRequestTime(userId, conn);
     }
   }
 

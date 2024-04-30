@@ -1,5 +1,4 @@
 import { PoolConnection } from 'mariadb';
-import TxnTemplate from '../db/template/TxnTemplate.ts';
 import SqlTemplate from '../db/template/SqlTemplate.ts';
 import petService from './PetService.ts';
 import foodService from './FoodService.ts';
@@ -7,11 +6,9 @@ import requestService from './RequestService.ts';
 import { NotFoundError } from '../errors/MyErrors.ts';
 
 class UserService {
-  private TxnTemplate;
   private SqlTemplate;
 
   constructor() {
-    this.TxnTemplate = new TxnTemplate();
     this.SqlTemplate = new SqlTemplate();
   }
 
@@ -50,7 +47,7 @@ class UserService {
   }
 
   async joinUser(uid: string, hashPwd: string, nickName: string) {
-    await this.TxnTemplate.transaction(async conn => {
+    await this.SqlTemplate.transaction(async conn => {
       await this.setUser(uid, hashPwd, nickName, conn);
       const user = await this.getUser(uid, hashPwd, conn);
       const pet = await petService.getRandomPet(conn);

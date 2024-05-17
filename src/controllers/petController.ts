@@ -45,6 +45,15 @@ class PetController {
       .catch(e => next(e));
   }
 
+  static async boredDown(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const { decreaseValue } = req.body;
+    await petService
+      .decreaseBoredLevel(decreaseValue, userId)
+      .then(() => res.sendStatus(200))
+      .catch(e => next(e));
+  }
+
   /**
    * 엔드 포인트 아님
    * 펫 관련 요청시 펫의 상태와 마지막 요청시간을 업데이트 하는 미들웨어 로직
@@ -57,6 +66,8 @@ class PetController {
       .then(() => next())
       .catch(e => next(e));
   }
+
+  static async updatePetStateFromLastTime(req: Request, res: Response, next: NextFunction) {}
 }
 
 export default PetController;

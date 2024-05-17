@@ -6,7 +6,7 @@ config:
     - duration: 60
       arrivalRate: 5
       rampTo: 20
-      name: total 75000 user request
+      name: total 45000 user request
   # Load & configure a couple of useful plugins
   # https://docs.art/reference/extensions
   plugins:
@@ -22,6 +22,6 @@ config:
 scenarios:
   - flow:
       - loop:
-          - post:
+          - get:
               url: '/test'
         count: 100

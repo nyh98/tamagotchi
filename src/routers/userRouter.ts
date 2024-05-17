@@ -11,8 +11,5 @@ userRouter.post('/join', UserValidator.join, UserController.join, UserErrorHandl
 userRouter.post('/login', UserValidator.login, UserController.login, UserErrorHandler.login);
 
 userRouter.use(UncaughtErrorHandler.responseError);
-userRouter.use((req, res) => {
-  res.send('아무것도 없음');
-}); //404페이지 만들어야됨
 
 export default userRouter;

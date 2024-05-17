@@ -11,10 +11,10 @@ app.use(cookieParser());
 
 app.use('/users', userRouter);
 app.use('/pets', petRouter);
-
-app.use((req, res) => {
-  res.send('아무것도 없음'); //404페이지 만들어야됨
+app.get('/', (req, res) => {
+  res.send('웹팩으로 빌드된 파일');
 });
+
 app.listen(port, () => {
   console.log(`open sever port ${port}`);
 });

@@ -23,6 +23,22 @@ class PetService {
     return await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET alive = 0 WHERE user_id = ?', [userId]);
   }
 
+  async increaseBoredLevel(increaseValue: number, userId: number) {
+    await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET bored = bored - ? WHERE user_id = ?', [
+      increaseValue,
+      userId,
+    ]);
+  }
+
+  async decreaseBoredLevel(decreaseBoredValue: number, userId: number) {
+    const pet = await this.getPetFromUser(userId);
+    if (pet.bored - decreaseBoredValue < 0) {
+      return await this.setBoredomToZero(userId);
+    } else {
+      await this.updateBored(decreaseBoredValue, userId);
+    }
+  }
+
   private async decreaseHungerLevel(hungryLevel: number, userId: number, conn?: PoolConnection) {
     const pet = await this.getPetFromUser(userId, conn);
     const afterHungryLv = pet.hungry - hungryLevel;
@@ -113,6 +129,34 @@ class PetService {
       if (stoolCount) {
         await petService.updateStoolCount(userId, stoolCount, conn);
       }
+      await requestService.createOrUpdateTime(userId, conn);
+    });
+  }
+
+  private async setBoredomToZero(userId: number) {
+    await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET bored = 0 WHERE user_id = ?', [userId]);
+  }
+
+  private async updateBored(decreaseBoredValue: number, userId: number) {
+    await this.SqlTemplate.modifyQuery('UPDATE user_current_pet SET bored = bored - ? WHERE user_id = ?', [
+      decreaseBoredValue,
+      userId,
+    ]);
+  }
+
+  async updatePetStateFromLastTime(userId: number, decreaseBoredValue: number) {
+    await this.SqlTemplate.transaction(async conn => {
+      const stoolCount = await this.calculateStoolCount(userId);
+      if (stoolCount) {
+        await this.updateStoolCount(userId, stoolCount, conn);
+      }
+      const pet = await this.getPetFromUser(userId, conn);
+      if (pet.bored - decreaseBoredValue < 0) {
+        return await this.setBoredomToZero(userId);
+      } else {
+        await this.updateBored(decreaseBoredValue, userId);
+      }
+
       await requestService.createOrUpdateTime(userId, conn);
     });
   }

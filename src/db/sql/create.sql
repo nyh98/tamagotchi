@@ -18,7 +18,7 @@ CREATE TABLE foods(
 
 CREATE TABLE user_pet_catalog(
      id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-     user_id INT UNSIGNED NOT NULL ,
+     user_id INT UNSIGNED NOT NULL UNIQUE,
      pet_id INT UNSIGNED NOT NULL,
      max_pet_lv_reached TINYINT DEFAULT 1,
      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,

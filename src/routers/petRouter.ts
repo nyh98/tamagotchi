@@ -20,10 +20,8 @@ petRouter.put('/hungry-down', PetValidator.hungryDown, PetController.hungryDown,
 
 petRouter.put('/hungry-up', PetController.hungryUp, PetErrorHandler.hungry);
 
-petRouter.use(UncaughtErrorHandler.responseError);
+petRouter.put('/bored-down', PetValidator.checkDecreaseValue, PetController.boredDown);
 
-petRouter.use((req, res) => {
-  res.send('아무것도 없음');
-}); //404페이지 만들어야됨
+petRouter.use(UncaughtErrorHandler.responseError);
 
 export default petRouter;

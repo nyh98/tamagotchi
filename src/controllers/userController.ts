@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { CookieOptions, NextFunction, Request, Response } from 'express';
 import utils from '../utils/utils.ts';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -25,11 +25,11 @@ class UserController {
     return await userService
       .getUser(uid, hashPwd)
       .then(user => {
-        const token = jwt.sign({ id: user.id }, process.env.TOKEN_KEY || '', {
+        const token = jwt.sign({ id: user.id }, process.env.TOKEN_KEY!, {
           algorithm: 'HS256',
           expiresIn: 60 * 60 * 24 * 14,
         });
-        const cookieOption = { httpOnly: true };
+        const cookieOption: CookieOptions = { httpOnly: true, secure: false };
         res.cookie('tk', token, cookieOption).json(user);
       })
       .catch(e => next(e));

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { AuthError } from '../errors/MyErrors.ts';
-import tokenManager from '../token/tokenManager.ts';
+import tokenManager from './tokenManager.ts';
 
 const authValidator = {
   auth(req: Request, res: Response, next: NextFunction) {

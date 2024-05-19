@@ -1,6 +1,6 @@
 import { Schema, Types, model } from 'mongoose';
 
-interface IFood {
+export interface IFood {
   _id: Types.ObjectId;
   name: string;
   decreaseHungerLv: number;

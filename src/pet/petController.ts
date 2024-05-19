@@ -19,6 +19,7 @@ const petController = {
           { arrayFilters: [{ 'pet.stoolCount': { $lt: stoolCount } }] }
         );
       }
+
       await petService.checkIfPetIsDead(user._id);
       await petService.checkLvUp(user._id);
       await userService.updateRequstTime(user._id);

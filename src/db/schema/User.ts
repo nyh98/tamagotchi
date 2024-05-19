@@ -3,7 +3,6 @@ import {
   HydratedArraySubdocument,
   HydratedDocument,
   Model,
-  ObjectId,
   Schema,
   Types,
   model,
@@ -14,7 +13,7 @@ export interface IUser {
   email: string;
   password: string;
   pets: Array<{
-    petId: ObjectId;
+    _id: Types.ObjectId;
     phase: number;
     hungy: number;
     bored: number;
@@ -22,7 +21,7 @@ export interface IUser {
     stoolCount: number;
     isAlive: boolean;
   }>;
-  foods: Array<{ foodId: ObjectId; count: number }>;
+  foods: Array<{ _id: Types.ObjectId; count: number }>;
   lastRequest: Date;
 }
 
@@ -30,7 +29,7 @@ type UserHydratedDocument = HydratedDocument<
   IUser,
   {
     pets: HydratedArraySubdocument<{
-      petId: ObjectId;
+      _id: Types.ObjectId;
       phase: number;
       hungry: number;
       bored: number;
@@ -38,7 +37,7 @@ type UserHydratedDocument = HydratedDocument<
       stoolCount: number;
       isAlive: boolean;
     }>[];
-    foods: HydratedArraySubdocument<{ foodId: ObjectId; count: number }>[];
+    foods: HydratedArraySubdocument<{ _id: Types.ObjectId; count: number }>[];
   }
 >;
 
@@ -49,7 +48,7 @@ const userSchema = new Schema<IUser, UserModelType, DefaultSchemaOptions, IUser,
   password: { type: String, required: true },
   pets: [
     {
-      petId: { type: Types.ObjectId, ref: 'Pet', unique: true },
+      _id: { type: Types.ObjectId, ref: 'Pet', unique: true },
       phase: { type: Number, required: true, default: 1 },
       hungry: { type: Number, required: true, default: 0 },
       bored: { type: Number, required: true, default: 0 },
@@ -58,7 +57,7 @@ const userSchema = new Schema<IUser, UserModelType, DefaultSchemaOptions, IUser,
       isAlive: { type: Boolean, required: true, default: true },
     },
   ],
-  foods: [{ foodId: { type: Types.ObjectId, ref: 'Food', unique: true }, count: { type: Number, default: 1 } }],
+  foods: [{ _id: { type: Types.ObjectId, ref: 'Food', unique: true }, count: { type: Number, default: 1 } }],
   lastRequest: { type: Date },
 });
 

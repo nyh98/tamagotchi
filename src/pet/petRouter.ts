@@ -5,8 +5,8 @@ import petErrorHandler from './petErrorHandler.ts';
 
 const petRouter = express.Router();
 
-// petRouter.use(authValidator.auth);
-petRouter.use(petController.updatePetStatus);
+petRouter.use(authValidator.auth);
+petRouter.post('/check', petController.updatePetStatus);
 
 petRouter.get('/', petController.getRandomPet);
 

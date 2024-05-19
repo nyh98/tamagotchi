@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { Pet } from '../db/schema/Pet.ts';
 import userService from '../user/userService.ts';
 import User, { IUser } from '../db/schema/User.ts';
+import { IFood } from '../db/schema/Food.ts';
 
 const petService = {
   async getRandomPet(userId: string) {
@@ -50,6 +51,36 @@ const petService = {
       if (pet.nextLvTime && pet.nextLvTime < new Date()) {
         pet.phase += 1;
         pet.nextLvTime = this.calculateNextLvTime(pet.phase);
+      }
+      return pet;
+    });
+    await user.save();
+  },
+
+  async petEatFood(userId: string | Types.ObjectId, petId: string | Types.ObjectId, food: IFood) {
+    const user = await userService.getUser(userId);
+    user.pets = user.pets.map(pet => {
+      if (pet._id.equals(petId)) {
+        if (pet.hungry - food.decreaseHungerLv < 0) {
+          pet.hungry = 0;
+        } else {
+          pet.hungry -= food.decreaseHungerLv;
+        }
+      }
+      return pet;
+    });
+    await user.save();
+  },
+
+  async decreaseBoredLv(userId: string | Types.ObjectId, petId: string | Types.ObjectId, decreaseLv: number) {
+    const user = await userService.getUser(userId);
+    user.pets = user.pets.map(pet => {
+      if (pet._id.equals(petId)) {
+        if (pet.bored - decreaseLv < 0) {
+          pet.bored = 0;
+        } else {
+          pet.bored -= decreaseLv;
+        }
       }
       return pet;
     });

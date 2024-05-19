@@ -1,7 +1,7 @@
-import { ObjectId, Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
 interface IPet {
-  _id: ObjectId;
+  _id: Types.ObjectId;
   imgs: Array<string>;
   name: string;
 }

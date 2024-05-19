@@ -9,8 +9,8 @@ import {
   model,
 } from 'mongoose';
 
-interface IUser {
-  _id: ObjectId;
+export interface IUser {
+  _id: Types.ObjectId;
   email: string;
   password: string;
   pets: Array<{
@@ -18,7 +18,7 @@ interface IUser {
     phase: number;
     hungy: number;
     bored: number;
-    nextLvTime: Date;
+    nextLvTime: Date | null;
     stoolCount: number;
     isAlive: boolean;
   }>;
@@ -32,13 +32,13 @@ type UserHydratedDocument = HydratedDocument<
     pets: HydratedArraySubdocument<{
       petId: ObjectId;
       phase: number;
-      hungy: number;
+      hungry: number;
       bored: number;
-      nextLvTime: Date;
+      nextLvTime: Date | null;
       stoolCount: number;
       isAlive: boolean;
-    }>;
-    foods: HydratedArraySubdocument<{ foodId: ObjectId; count: number }>;
+    }>[];
+    foods: HydratedArraySubdocument<{ foodId: ObjectId; count: number }>[];
   }
 >;
 
@@ -50,15 +50,15 @@ const userSchema = new Schema<IUser, UserModelType, DefaultSchemaOptions, IUser,
   pets: [
     {
       petId: { type: Types.ObjectId, ref: 'Pet', unique: true },
-      phase: { type: Number, required: true },
-      hungy: { type: Number, required: true },
-      bored: { type: Number, required: true },
-      stoolCount: { type: Number, required: true },
-      nextLvTime: { type: Date, default: new Date() },
-      isAlive: { type: Boolean, required: true },
+      phase: { type: Number, required: true, default: 1 },
+      hungry: { type: Number, required: true, default: 0 },
+      bored: { type: Number, required: true, default: 0 },
+      stoolCount: { type: Number, required: true, default: 0 },
+      nextLvTime: { type: Date, default: new Date(Date.now() + 1000 * 60 * 10) },
+      isAlive: { type: Boolean, required: true, default: true },
     },
   ],
-  foods: [{ foodId: { type: Types.ObjectId, ref: 'Food', unique: true }, count: { Number } }],
+  foods: [{ foodId: { type: Types.ObjectId, ref: 'Food', unique: true }, count: { type: Number, default: 1 } }],
   lastRequest: { type: Date },
 });
 

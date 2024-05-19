@@ -1,22 +1,19 @@
 import express from 'express';
-import userRouter from './routers/userRouter.ts';
-import petRouter from './routers/petRouter.ts';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectionMongodb from './db/connection/mongodb.ts';
+import userRouter from './user/userRouter.ts';
+import petRouter from './pet/petRouter.ts';
 
 const app = express();
 const port = 5000;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
+app.use(cors());
 
-app.use('/users', userRouter);
+app.use('/auth', userRouter);
 app.use('/pets', petRouter);
-app.get('/', (req, res) => {
-  res.send('웹팩으로 빌드된 파일');
-});
 
 app.listen(port, () => {
   connectionMongodb()
